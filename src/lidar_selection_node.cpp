@@ -7,11 +7,10 @@
 #include <tf/transform_listener.h>
 #include <pcl_ros/transforms.h>
 #include <pcl/filters/passthrough.h>
+#include <atomic>
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
 float box_size = 3;
-float max_z = 10.0;
-float min_z = -10.0;
 
 
 ros::Publisher pub;
@@ -20,27 +19,17 @@ ros::Publisher pub3;
 ros::Publisher pub4;
 
 tf::TransformListener *tf_listener; 
-#include <atomic>
-
+std::string box_frame;
 std::atomic<float> count = 0;
 
 void callback_points(const PointCloud::ConstPtr& msg)//const PointCloud::ConstPtr& msg)
 {
-  //pcl::PCLPointCloud2 pcl_pc2;
-  //pcl_conversions::toPCL(*msg,pcl_pc2);
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
-  //pcl::fromPCLPointCloud2(pcl_pc2,*cloud_in);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::IndicesPtr indices_x (new pcl::Indices ());
   pcl::IndicesPtr indices_xz (new pcl::Indices ());
-  //pcl::PointIndices::Ptr indices_x (new pcl::PointIndices ());
-  //pcl::PointIndices::Ptr indices_xz (new pcl::PointIndices ());
-  // The indices_x array indexes all points of cloud_in that have x between 0.0 and 1000.0
-  // tf_listener->waitForTransform("pupek", "test", "test1", ros::Duration(5.0));
-
 
   const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed (new pcl::PointCloud<pcl::PointXYZ>);
-  const std::string test1 = "cloud";
+  const std::string test1 = box_frame;
   pcl_ros::transformPointCloud(test1,
                            *msg,
                            *cloud_transformed,
@@ -76,14 +65,29 @@ void callback_points(const PointCloud::ConstPtr& msg)//const PointCloud::ConstPt
    count = count + local_count;
 }
 
+
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "lidar_exctract");
-  ros::NodeHandle nh;
-  ros::Subscriber sub = nh.subscribe("ouster/points", 1, callback_points);
-  ros::Subscriber sub2 = nh.subscribe("ouster/points", 1, callback_points);
-  pub = nh.advertise<sensor_msgs::PointCloud2> ("points2", 10000);
-  pub2 = nh.advertise<std_msgs::Float32> ("counts", 1);
+  ros::NodeHandle nh("~");
+  std::string count_topic_name, cloud_topic_name;
+  nh.param<std::string>("cloud_out", cloud_topic_name, "points");
+  nh.param<std::string>("cont_out", count_topic_name, "count");
+  nh.param<std::string>("box_frame", box_frame, "box");
+  std::string lidar_1,lidar_2, lidar_3, lidar_4;
+  nh.param<std::string>("lidar_topic_1", lidar_1, "ouster/points");
+  nh.param<std::string>("lidar_topic_2", lidar_2, "os2");
+  nh.param<std::string>("lidar_topic_3", lidar_3, "os3");
+  nh.param<std::string>("lidar_topic_4", lidar_4, "os4");
+
+  std::cout << box_frame << std::endl;
+  ros::Subscriber sub1 = nh.subscribe(lidar_1, 1, callback_points);
+  ros::Subscriber sub2 = nh.subscribe(lidar_2, 1, callback_points);
+  ros::Subscriber sub3 = nh.subscribe(lidar_3, 1, callback_points);
+  ros::Subscriber sub4 = nh.subscribe(lidar_4, 1, callback_points);
+  pub = nh.advertise<sensor_msgs::PointCloud2> (cloud_topic_name, 10000);
+  pub2 = nh.advertise<std_msgs::Float32> (count_topic_name, 1);
   tf_listener    = new tf::TransformListener();
   ros::Rate rate(20); // ROS Rate at 5Hz
   while (ros::ok()) {

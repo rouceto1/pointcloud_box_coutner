@@ -1,0 +1,22 @@
+<launch>
+
+  <arg name="lidar_topic_1" default="/ouster/points"/>
+  <arg name="lidar_topic_2" default="/ouster/points1"/>
+  <arg name="lidar_topic_3" default="/ouster/points2"/>
+  <arg name="lidar_topic_4" default="/ouster/points3"/>
+  <arg name="cloud_out" default="/cloud_out"/>
+  <arg name="count_out" default="/count_out"/>
+  <arg name="box_frame" default="box"/>
+
+  
+    <node name="lidar" pkg="lidar_selection" type="lidar_selection_node" output="screen">
+      <param name="lidar_topic_1" value="$(arg lidar_topic_1)"/>
+      <param name="lidar_topic_2" value="$(arg lidar_topic_2)"/>
+      <param name="lidar_topic_3" type="str" value="$(arg lidar_topic_3)"/>
+      <param name="lidar_topic_4" type="str" value="$(arg lidar_topic_4)"/>
+      <param name="cloud_out" type="str" value="$(arg cloud_out)"/>
+      <param name="count_out" type="str" value="$(arg count_out)"/>
+      <param name="box_frame" type="str" value="$(arg box_frame)"/>
+    </node>
+  
+</launch>

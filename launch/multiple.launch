@@ -1,0 +1,30 @@
+<launch>
+
+  <arg name="lidar_topic_1" default="/ouster/points"/>
+  <arg name="lidar_topic_2" default="/ouster/points1"/>
+  <arg name="lidar_topic_3" default="/ouster/points2"/>
+  <arg name="lidar_topic_4" default="/ouster/points3"/>
+  <arg name="cloud_out" default="cloud_out"/>
+  <arg name="count_out" default="count_out"/>
+  
+
+
+
+  <group ns = "box1">
+    <include file="$(find lidar_selection)/launch/counter.launch" pass_all_args="true">
+      <arg name="box_frame" value="box1"/>
+    </include>
+  </group>
+
+  <group ns = "box2">
+    <include file="$(find lidar_selection)/launch/counter.launch" pass_all_args="true">
+      <arg name="box_frame" value="box2"/>
+    </include>
+  </group>
+
+  <node pkg="lidar_selection" name="bounding" type="bounding_box.py">
+    <param name="frames" type="yaml" value="[box1, box2]"/>
+  </node>
+
+  
+</launch>
