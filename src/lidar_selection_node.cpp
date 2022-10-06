@@ -10,7 +10,7 @@
 #include <atomic>
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
-float box_size = 3;
+float box_size;
 
 
 ros::Publisher pub;
@@ -80,6 +80,7 @@ int main(int argc, char** argv)
   nh.param<std::string>("lidar_topic_2", lidar_2, "os2");
   nh.param<std::string>("lidar_topic_3", lidar_3, "os3");
   nh.param<std::string>("lidar_topic_4", lidar_4, "os4");
+  nh.param<float>("box_size", box_size, 3.0);
 
   std::cout << box_frame << std::endl;
   ros::Subscriber sub1 = nh.subscribe(lidar_1, 1, callback_points);

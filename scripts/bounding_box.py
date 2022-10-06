@@ -6,11 +6,12 @@ from tf.transformations import *
 rospy.init_node("bbox")
 pub = rospy.Publisher("bbox", BoundingBoxArray, queue_size=2)
 boxes = rospy.get_param("~frames")
+size = 3.0 #rospy.get_param("~box_size")
 print(boxes)
 r = rospy.Rate(24)
 counter = 0
-size = 3.0
-def make_box(i,frame, size):
+
+def make_box(i,frame, size,val):
     box_a = BoundingBox()
     box_a.label = i
     now = rospy.Time.now()
@@ -23,7 +24,7 @@ def make_box(i,frame, size):
     #box_a.pose.orientation.w = q[3]
     box_a.pose.position.x = box_a.pose.position.y = box_a.pose.position.z = size/2.0
     box_a.dimensions.x  = box_a.dimensions.y = box_a.dimensions.z = size
-    #box_a.value = (counter % 100) / 100.0
+    box_a.value = val
     return box_a
 
 while not rospy.is_shutdown():
@@ -31,8 +32,9 @@ while not rospy.is_shutdown():
     box_arr.header.frame_id = "pupek"
     now = rospy.Time.now()
     box_arr.header.stamp = now
+    values =[255,0]
     for index, frames in enumerate (boxes):
-        box_arr.boxes.append(make_box(index,frames, size))
+        box_arr.boxes.append(make_box(index,frames, size,values[index]))
     pub.publish(box_arr)
     r.sleep()
     counter = counter + 1

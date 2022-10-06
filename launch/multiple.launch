@@ -1,5 +1,6 @@
 <launch>
 
+  <arg name="box_size" default="3.0"/> 
   <arg name="lidar_topic_1" default="/ouster/points"/>
   <arg name="lidar_topic_2" default="/ouster/points1"/>
   <arg name="lidar_topic_3" default="/ouster/points2"/>
@@ -7,9 +8,6 @@
   <arg name="cloud_out" default="cloud_out"/>
   <arg name="count_out" default="count_out"/>
   
-
-
-
   <group ns = "box1">
     <include file="$(find lidar_selection)/launch/counter.launch" pass_all_args="true">
       <arg name="box_frame" value="box1"/>

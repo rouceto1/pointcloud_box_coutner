@@ -7,7 +7,7 @@
   <arg name="cloud_out" default="/cloud_out"/>
   <arg name="count_out" default="/count_out"/>
   <arg name="box_frame" default="box"/>
-
+  <arg name="box_size" default="3.0"/> 
   
     <node name="lidar" pkg="lidar_selection" type="lidar_selection_node" output="screen">
       <param name="lidar_topic_1" value="$(arg lidar_topic_1)"/>
